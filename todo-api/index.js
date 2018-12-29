@@ -9,9 +9,19 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get('/tasks', function(req, res) {
-    db.tasks.find(function(err, data) {
-        res.json(data);
-    });
+    var status = req.query.status;
+
+    if(status == undefined) {
+        db.tasks.find(function(err, data) {
+            res.json(data);
+        });
+    } else {
+        db.tasks.find({
+            status: parseInt(status)
+        }, function(err, data) {
+            res.json(data);
+        });
+    }
 });
 
 // curl -X POST localhost:3000/tasks -d "subject=Bread"
@@ -43,7 +53,7 @@ app.put('/tasks/:id', function(req, res) {
 
     db.tasks.update(
         { "_id": mongojs.ObjectId(id) },
-        { $set: { status: status } },
+        { $set: { status: parseInt(status) } },
         { "multi": true },
         function(err, data) {
         res.json(data);
