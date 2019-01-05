@@ -1,56 +1,47 @@
 import React from 'react';
-import './App.css';
+import Header from './Header';
+import Add from './Add';
+import Todo from './Todo';
+import Done from './Done';
 
-class Fruit extends React.Component {
-    render() {
-        return (
-            <li>{this.props.name} - ${this.props.price}</li>
-        )
-    }
+const AppStyle = {
+    fontFamily: 'arial',
+    width: 500,
+    margin: '20px auto',
+    border: '4px solid #ddd',
+    borderRadius: 5,
+    background: '#ffe'
 }
 
-class Fruits extends React.Component {
-    render() {
-        return (
-            <ul>
-                {this.props.data.map((item) => {
-                    return <Fruit name={item.name} price={item.price} />
-                })}
-            </ul>
-        )
-    }
+const ContentStyle = {
+    padding: 20
 }
 
 class App extends React.Component {
     constructor() {
         super()
-
         this.state = {
-            data: [
-                { name: 'Banana', price: 0.1 },
-                { name: 'Papaya', price: 0.3 },
-                { name: 'Pineapple', price: 0.5 },
+            todo: [
+                { "_id": 1, "subject": "Something to do" },
+                { "_id": 2, "subject": "Another thing to do" },
+            ],
+            done: [
+                { "_id": 3, "subject": "More thing to do" },
+                { "_id": 4, "subject": "Yet another thing to do" },
             ]
         }
     }
 
     render() {
         return (
-            <div>
-                <Fruits data={this.state.data} />
-                <button onClick={() => {
-                    var list = this.state.data
-                    list.push({
-                        name: 'Coconut',
-                        price: 0.7
-                    })
-
-                    this.setState({
-                        data: list
-                    })
-                }}>
-                    Button
-                </button>
+            <div style={AppStyle}>
+                <Header count={this.state.todo.length} />
+                <Add />
+                <div style={ContentStyle}>
+                    <Todo data={this.state.todo} />
+                    <hr />
+                    <Done data={this.state.done} />
+                </div>
             </div>
         )
     }
