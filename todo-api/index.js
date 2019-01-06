@@ -1,12 +1,15 @@
 var express = require('express');
 var mongojs = require('mongojs');
 var bodyParser = require('body-parser');
+var cors = require('cors');
 
 var app = express();
 var db = mongojs('todo', ['tasks']);
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.use(cors());
 
 app.get('/tasks', function(req, res) {
     var status = req.query.status;
