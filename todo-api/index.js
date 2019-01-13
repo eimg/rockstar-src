@@ -49,6 +49,14 @@ app.delete('/tasks/:id', function(req, res) {
     });
 });
 
+app.delete('/tasks', function(req, res) {
+    db.tasks.remove({
+        "status": 1
+    }, function(err, data) {
+        res.json(data);
+    });
+});
+
 // curl -X PUT localhost:3000/tasks/<id> -d "status=1"
 app.put('/tasks/:id', function(req, res) {
     var id = req.params.id;
@@ -72,6 +80,6 @@ app.get('/tasks/:id', function(req, res) {
     });
 });
 
-app.listen(3000, function() {
-    console.log('Express server running at 3000');
+app.listen(8000, function() {
+    console.log('Express server running at 8000');
 });

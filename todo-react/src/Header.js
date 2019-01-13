@@ -11,12 +11,13 @@ import Badge from '@material-ui/core/Badge';
 
 const styles = {
     toolbar: {
-        paddingTop: 5
+        paddingTop: 5,
+        paddingRight: 15,
     },
     grow: {
         flexGrow: 1,
     },
-        menuButton: {
+    menuButton: {
         marginLeft: -12,
         marginRight: 20,
     },
@@ -61,7 +62,9 @@ class Header extends React.Component {
                         style={styles.grow}>
                         React Todo
                     </Typography>
-                    <IconButton color="inherit" onClick={this.menuOpen}>
+                    <IconButton
+                        color="inherit"
+                        onClick={this.menuOpen}>
                         <MoreVertIcon />
                     </IconButton>
                     <Menu

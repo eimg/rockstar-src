@@ -16,9 +16,10 @@ const styles = {
     },
     input: {
         marginLeft: 8,
-        flex: 1,
+        flexGrow: 1,
     },
     iconButton: {
+        marginRight: 15,
         padding: 10,
     },
 };
