@@ -1,22 +1,10 @@
 import React from 'react';
+import Divider from '@material-ui/core/Divider';
+
 import Header from './Header';
 import Add from './Add';
 import Todo from './Todo';
 import Done from './Done';
-import Footer from './Footer';
-
-const AppStyle = {
-    fontFamily: 'arial',
-    width: 500,
-    margin: '20px auto',
-    border: '4px solid #ddd',
-    borderRadius: 5,
-    background: '#ffe'
-}
-
-const ContentStyle = {
-    padding: 20
-}
 
 class App extends React.Component {
     constructor() {
@@ -36,18 +24,6 @@ class App extends React.Component {
         this.done = this.done.bind(this);
         this.undo = this.undo.bind(this);
         this.clear = this.clear.bind(this);
-    }
-
-    componentWillMount() {
-        fetch('http://localhost:3000/tasks', {
-            mode: "cors"
-        }).then((res) => {
-            return res.json();
-        }).then((res) => {
-            this.setState({
-                todo: res
-            });
-        });
     }
 
     add(task) {
@@ -110,21 +86,27 @@ class App extends React.Component {
 
     render() {
         return (
-            <div style={AppStyle}>
-                <Header count={this.state.todo.filter((item) => item.status === 0).length} />
+            <div>
+
+                <Header
+                    clear={this.clear}
+                    count={this.state.todo.filter((item) => {
+                        return item.status === 0
+                    }).length} />
+
                 <Add handler={this.add} />
-                <div style={ContentStyle}>
-                    <Todo
-                        done={this.done}
-                        remove={this.remove}
-                        data={this.state.todo.filter((item) => item.status === 0)} />
-                    <hr />
-                    <Done
-                        undo={this.undo}
-                        remove={this.remove}
-                        data={this.state.todo.filter((item) => item.status === 1)} />
-                </div>
-                <Footer clear={this.clear} />
+
+                <Todo
+                    done={this.done}
+                    remove={this.remove}
+                    data={this.state.todo.filter((item) => item.status === 0)} />
+
+                <Divider />
+
+                <Done
+                    undo={this.undo}
+                    remove={this.remove}
+                    data={this.state.todo.filter((item) => item.status === 1)} />
             </div>
         )
     }

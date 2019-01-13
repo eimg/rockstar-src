@@ -1,32 +1,38 @@
 import React from 'react';
 
-const DoneStyle = {
-    color: '#999',
-    fontSize: '0.8em'
-}
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Checkbox from '@material-ui/core/Checkbox';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 
-const RemoveStyle = {
-    float: 'right'
-}
+const styles = {
+  root: {
+    width: '100%',
+  },
+};
 
 class Done extends React.Component {
     render() {
         return (
-            <ul style={DoneStyle}>
+            <List style={styles.root}>
                 {this.props.data.map((item) => {
                     return (
-                        <li key={item._id}>
-                            <input type="checkbox" onChange={() => {
+                        <ListItem key={item._id}>
+                            <Checkbox checked disableRipple onChange={() => {
                                 this.props.undo(item._id)
-                            }} checked />
-                            <s>{item.subject}</s>
-                            <a href="#/" style={RemoveStyle} onClick={()=>{
+                            }} />
+                            <ListItemText primary={item.subject}/>
+                            <IconButton onClick={() => {
                                 this.props.remove(item._id)
-                            }}>&times;</a>
-                        </li>
+                            }}>
+                                <DeleteIcon />
+                            </IconButton>
+                        </ListItem>
                     )
                 })}
-            </ul>
+            </List>
         )
     }
 }

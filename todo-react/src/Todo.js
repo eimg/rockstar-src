@@ -1,27 +1,38 @@
 import React from 'react';
 
-const RemoveStyle = {
-    float: 'right'
-}
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Checkbox from '@material-ui/core/Checkbox';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+
+const styles = {
+  root: {
+    width: '100%',
+  },
+};
 
 class Todo extends React.Component {
     render() {
         return (
-            <ul>
+            <List style={styles.root}>
                 {this.props.data.map((item) => {
                     return (
-                        <li key={item._id}>
-                            <input type="checkbox" onChange={() => {
+                        <ListItem key={item._id}>
+                            <Checkbox disableRipple onChange={() => {
                                 this.props.done(item._id)
                             }} />
-                            {item.subject}
-                            <a href="#/" style={RemoveStyle} onClick={()=>{
+                            <ListItemText primary={item.subject}/>
+                            <IconButton onClick={() => {
                                 this.props.remove(item._id)
-                            }}>&times;</a>
-                        </li>
+                            }}>
+                                <DeleteIcon />
+                            </IconButton>
+                        </ListItem>
                     )
                 })}
-            </ul>
+            </List>
         )
     }
 }
