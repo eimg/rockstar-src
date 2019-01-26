@@ -7,114 +7,98 @@ import Add from './Add';
 import Todo from './Todo';
 import Done from './Done';
 
+import { connect } from 'react-redux';
+
 const api = 'http://localhost:8000';
 
-var data = {
-    todo: [
-        { "_id": 1, "subject": "Something to do", "status": 0 },
-        { "_id": 2, "subject": "Another thing to do", "status": 0 },
-        { "_id": 3, "subject": "More thing to do", "status": 1 },
-        { "_id": 4, "subject": "Yet another thing to do", "status": 1 },
-    ],
-    apiError: false,
-};
-
 class App extends React.Component {
-    constructor() {
-        super()
-
-        this.autoid = 4;
-        this.add = this.add.bind(this);
-        this.remove = this.remove.bind(this);
-        this.done = this.done.bind(this);
-        this.undo = this.undo.bind(this);
-        this.clear = this.clear.bind(this);
-    }
-
-    add(task) {
-        var todo = data.todo;
-        var newTask = {
-            subject: task,
-            status: 0
-        };
-
-        todo.push(newTask);
-        data.todo = todo;
-        this.forceUpdate();
-    }
-
-    remove(_id) {
-        var todo = this.state.todo.filter((item) => {
-            return item._id !== _id
-        });
-
-        this.setState({
-            todo: todo
-        });
-    }
-
-    done(_id) {
-        var todo = this.state.todo.map((item) => {
-            if(item._id === _id) item.status = 1
-            return item;
-        });
-
-        this.setState({
-            todo: todo
-        })
-    }
-
-    undo(_id) {
-        var todo = this.state.todo.map((item) => {
-            if(item._id === _id) item.status = 0
-            return item;
-        });
-
-        this.setState({
-            todo: todo
-        })
-    }
-
-    clear() {
-        var todo = this.state.todo.filter((item) => {
-            return item.status === 0
-        });
-
-        this.setState({
-            todo: todo
-        })
-    }
-
     render() {
         return (
             <div>
 
                 <Header
-                    clear={this.clear}
-                    count={data.todo.filter((item) => {
+                    clear={this.props.clear}
+                    count={this.props.todo.filter((item) => {
                         return item.status === 0
                     }).length} />
 
-                <Add handler={this.add} />
+                <Add handler={this.props.add} />
 
                 <Todo
-                    done={this.done}
-                    remove={this.remove}
-                    data={data.todo.filter((item) => item.status === 0)} />
+                    done={this.props.done}
+                    remove={this.props.remove}
+                    data={this.props.todo.filter((item) => item.status === 0)} />
 
                 <Divider />
 
                 <Done
-                    undo={this.undo}
-                    remove={this.remove}
-                    data={data.todo.filter((item) => item.status === 1)} />
+                    undo={this.props.undo}
+                    remove={this.props.remove}
+                    data={this.props.todo.filter((item) => item.status === 1)} />
 
                 <Snackbar
                     message="Server error"
-                    open={data.apiError} />
+                    open={this.props.apiError} />
             </div>
         )
     }
 }
 
-export default App
+var ReduxApp = connect((state) => {
+    return {
+        todo: state.todo,
+        apiError: state.apiError || false
+    }
+}, (dispatch) => {
+    return {
+        add: (subject) => {
+            fetch(`${api}/tasks`, {
+                method: 'post',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    subject, status: 0
+                })
+            }).then((res) => res.json()).then((json) => {
+                dispatch({ type: 'ADD', todo: json });
+            });
+        },
+        remove: (_id) => {
+            fetch(`${api}/tasks/${_id}`, { method: 'delete' });
+            dispatch({ type: 'REMOVE', _id });
+        },
+        done: (_id) => {
+            fetch(`${api}/tasks/${_id}`, {
+                method: 'put',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    status: 1
+                })
+            });
+
+            dispatch({ type: 'DONE', _id });
+        },
+        undo: (_id) => {
+            fetch(`${api}/tasks/${_id}`, {
+                method: 'put',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    status: 0
+                })
+            });
+
+            dispatch({ type: 'UNDO', _id });
+        },
+        clear: () => {
+            fetch(`${api}/tasks`, { method: 'delete' });
+            dispatch({ type: 'CLEAR' });
+        }
+    }
+})(App);
+
+export default ReduxApp;
