@@ -9,7 +9,7 @@ import Done from './Done';
 
 import { connect } from 'react-redux';
 
-const api = 'http://localhost:8000';
+const api = 'http://206.189.42.134';
 
 class App extends React.Component {
     render() {

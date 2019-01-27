@@ -1,0 +1,4 @@
+#Sun Jan 27 14:45:44 MMT 2019
+base.0=/home/eimg/Desktop/rockstar-src/todo-hybrid/platforms/android/app/build/intermediates/transforms/dexMerger/debug/0
+path.0=classes.dex
+renamed.0=classes.dex

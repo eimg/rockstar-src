@@ -6,7 +6,7 @@ import * as serviceWorker from './serviceWorker';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
-const api = 'http://localhost:8000';
+const api = 'http://206.189.42.134';
 
 var store = createStore((state = { todo: [] }, action) => {
     switch (action.type) {
