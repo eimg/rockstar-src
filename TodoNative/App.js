@@ -66,14 +66,6 @@ class App extends React.Component {
         text: ''
     }
 
-    componentDidMount () {
-        fetch('http://206.189.42.134/tasks').then((res) => res.json()).then((json) => {
-            this.setState({
-                todo: json
-            })
-        });
-    }
-
     add = () => {
         var newKey = ++this.currentKey + '';
         this.setState({
@@ -82,16 +74,6 @@ class App extends React.Component {
                 { key: newKey, subject: this.state.text, status: 0 }
             ],
             text: ''
-        });
-
-        fetch(`http://206.189.42.134/tasks`, {
-            method: 'post',
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                subject: this.state.text, status: 0
-            })
         });
     }
 

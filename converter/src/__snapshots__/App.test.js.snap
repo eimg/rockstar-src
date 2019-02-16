@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<App /> renders correctly 1`] = `
+<div>
+  <h1
+    title="Unit Converter"
+  >
+    Converter
+  </h1>
+  <input
+    name="peittha"
+    onChange={[Function]}
+    type="text"
+    value={1}
+  />
+   ပိဿာ 
+  <br />
+  <input
+    name="kg"
+    onChange={[Function]}
+    type="text"
+    value={1.63}
+  />
+   ကီလို 
+  <br />
+  <input
+    name="lb"
+    onChange={[Function]}
+    type="text"
+    value={3.6}
+  />
+   ပေါင် 
+  <br />
+</div>
+`;
