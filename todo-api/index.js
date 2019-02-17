@@ -3,6 +3,11 @@ var mongojs = require('mongojs');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 
+var multer  = require('multer');
+var upload = multer({ dest: 'banner/' });
+
+var { check, validationResult } = require('express-validator/check');
+
 var app = express();
 var db = mongojs('todo', ['tasks']);
 
@@ -10,6 +15,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(cors());
+
+app.post('/upload', upload.single('banner'), function(req, res) {
+    res.json(req.file);
+});
 
 app.get('/tasks', function(req, res) {
     var status = req.query.status;
@@ -28,7 +37,15 @@ app.get('/tasks', function(req, res) {
 });
 
 // curl -X POST localhost:3000/tasks -d "subject=Bread"
-app.post('/tasks', function(req, res) {
+app.post('/tasks', [
+    check('subject').isLength({ min: 3 })
+], function(req, res) {
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
+
     var subject = req.body.subject;
 
     db.tasks.insert({

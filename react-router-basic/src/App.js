@@ -18,12 +18,56 @@ import RestoreIcon from '@material-ui/icons/Restore';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 
+const styles = {
+    bannerButton: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        background: 'rgba(0, 0, 0, 0.4)',
+        color: 'white',
+        padding: '4px 12px',
+        borderRadius: '0 0 10px 0',
+        border: '0 none'
+    },
+    banner: {
+        width: 300,
+        height: 200
+    },
+    hide: {
+        display: 'none'
+    }
+}
+
 class App extends Component {
     constructor() {
         super();
         this.state = {
-            open: false
+            open: false,
+            src: 'default.png'
         }
+
+        this.fileInput = React.createRef();
+        this.form = React.createRef();
+    }
+
+    changeBanner = () => {
+        const reader = new FileReader();
+        reader.onload = (() => {
+            let formData = new FormData( this.form.current );
+
+            fetch('http://localhost:8000/upload', {
+                method: 'post',
+                body: formData
+            });
+
+            return (e) => {
+                this.setState({
+                    src: e.target.result
+                });
+            }
+        })();
+
+        reader.readAsDataURL(this.fileInput.current.files[0]);
     }
 
     render() {
@@ -46,11 +90,19 @@ class App extends Component {
                     <Drawer open={this.state.open} onClose={() => {
                         this.setState({open: false})
                     }}>
-                        <div style={{
-                            height: 100,
-                            background: 'gray'
-                        }}></div>
-                        <List style={{width: 200}}>
+                        <div>
+                            <form enctype="multipart/form-data" ref={this.form}>
+                                <input type="file" name="banner" style={styles.hide} ref={this.fileInput} onChange={this.changeBanner} />
+                            </form>
+
+                            <button style={styles.bannerButton} onClick={() => {
+                                this.fileInput.current.click();
+                            }}>Change Banner</button>
+
+                            <img src={this.state.src} alt="Banner" style={styles.banner} />
+                        </div>
+
+                        <List style={{width: 300}}>
 
                             <Link to="/">
                                 <ListItem button onClick={() => {
