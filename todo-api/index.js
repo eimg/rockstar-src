@@ -2,6 +2,11 @@ var express = require('express');
 var mongojs = require('mongojs');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+var jwt = require('jsonwebtoken');
+
+var passport = require('passport');
+var auth = require('./auth');
+passport.use(auth);
 
 var multer  = require('multer');
 var upload = multer({ dest: 'banner/' });
@@ -9,7 +14,7 @@ var upload = multer({ dest: 'banner/' });
 var { check, validationResult } = require('express-validator/check');
 
 var app = express();
-var db = mongojs('todo', ['tasks']);
+var db = mongojs('todo', ['tasks', 'users']);
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -95,6 +100,25 @@ app.get('/tasks/:id', function(req, res) {
     }, function(err, data) {
         res.json(data);
     });
+});
+// curl -X POST localhost:8000/login -d "username=bob&password=123456"
+app.post('/login', function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+
+    db.users.find({ username, password }, function(err, data) {
+        if(data.length) {
+            var token = jwt.sign(data[0], 'secret');
+            res.status(200).json({ token });
+        } else {
+            res.status(401).json({ msg: 'Unauthorize' });
+        }
+    });
+});
+
+// curl -X GET localhost:8000/admin -H "Authorization: Bearer <token>"
+app.get('/admin', passport.authenticate('jwt', { session: false }), function(req, res) {
+    res.json({ content: 'Admin Panel' });
 });
 
 app.listen(8000, function() {
