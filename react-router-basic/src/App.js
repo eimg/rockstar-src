@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Link, Route, Redirect } from 'react-router-dom';
+
+import Home from './Home';
+import About from './About';
+import Login from './Login';
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -43,11 +47,43 @@ class App extends Component {
         super();
         this.state = {
             open: false,
-            src: 'default.png'
+            src: 'default.png',
+            auth: false,
+            content: 'none'
         }
 
         this.fileInput = React.createRef();
         this.form = React.createRef();
+    }
+
+    login = (username, password) => {
+        fetch('http://localhost:8000/login', {
+            method: 'post',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username, password
+            })
+        }).then(res => {
+            if(res.ok)
+                return res.json();
+
+            alert("Auth fail");
+        }).then(json => {
+            this.setState({auth: json.token});
+
+            fetch('http://localhost:8000/admin', {
+                method: 'get',
+                headers: {
+                    'Authorization': 'Bearer ' + this.state.auth
+                }
+            }).then(res => res.json()).then(json => {
+                this.setState({
+                    content: json.content
+                });
+            });
+        });
     }
 
     changeBanner = () => {
@@ -120,19 +156,34 @@ class App extends Component {
                                 </ListItem>
                             </Link>
 
-                            <Link to="/contact">
+                            <Link to="/login">
                                 <ListItem button onClick={() => {
                                     this.setState({open: false})
                                 }}>
-                                    <ListItemText primary="Contact" />
+                                    <ListItemText primary="Login" />
                                 </ListItem>
                             </Link>
                         </List>
                     </Drawer>
 
-                    <Route path="/" exact component={Home} />
+                    <Route path="/" exact render={() => {
+                        if(this.state.auth) {
+                            return (<Home content={this.state.content} />)
+                        } else {
+                            return (<Redirect to="/login" />)
+                        }
+                    }} />
+
                     <Route path="/about" component={About} />
-                    <Route path="/contact" component={Contact} />
+
+                    <Route path="/login" render={() => {
+                        if(this.state.auth) {
+                            return (<Redirect to="/" />)
+                        } else {
+                            return <Login login={this.login} />
+                        }
+                    }} />
+
                     <Route path="/more/:label" component={More} />
 
                     <BottomNavigation style={{
@@ -156,9 +207,6 @@ class App extends Component {
     }
 }
 
-const Home = props => <div>Home</div>
-const About = props => <div>About</div>
-const Contact = props => <div>Contact</div>
 const More = props => <div>{props.match.params.label}</div>
 
 export default App;
